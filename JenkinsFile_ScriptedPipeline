@@ -1,0 +1,18 @@
+node('master') {
+    stage('CDown'){
+        git 'https://github.com/venkat18396/sample9.git'
+    }
+    stage('CBuild'){
+        sh 'mvn package'
+    }
+    stage('CDeploy'){
+        sh 'scp /var/lib/jenkins/workspace/CodePipeline/webapp/target/webapp.war  ubuntu@172.31.63.91:/var/lib/tomcat9/webapps/test.war'
+    }
+    stage('CTesting'){
+        git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+        sh 'java -jar /var/lib/jenkins/workspace/CodePipeline/testing.jar'
+    }
+    stage('CDel'){
+        sh 'scp /var/lib/jenkins/workspace/CodePipeline/webapp/target/webapp.war  ubuntu@172.31.58.230:/var/lib/tomcat9/webapps/final.war'
+    }
+}
