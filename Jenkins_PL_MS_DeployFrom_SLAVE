@@ -1,0 +1,31 @@
+node('master') {
+    stage('CDown'){
+        git 'https://github.com/venkat18396/sample9.git'
+    }
+    stage('CBuild'){
+        sh 'mvn package'
+    }
+    stage('CDeploy'){
+        sh 'scp /var/lib/jenkins/workspace/CodePipeline/webapp/target/webapp.war  ubuntu@172.31.63.91<test_IP>:/var/lib/tomcat9/webapps/test.war'
+    }
+    
+}
+
+node('slave') {
+    stage('CTesting'){
+        git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+        sh 'java -jar /home/slave/workspace/workspace/PL_MS/testing.jar'
+    }
+}
+node('master') {
+    
+    stage('BUILD Transfer to SLAVE'){
+        sh 'scp /var/lib/jenkins/workspace/CodePipeline/webapp/target/webapp.war slave@<slave_IP>:/home/slave/workspace/workspace/PL_MS/test.war'
+    }
+}
+
+node('slave') {
+    stage('Delivery to PROD'){
+        sh 'scp /home/ubuntu/workspace/workspace/PL_MS/test.war ubuntu@<prod_IP>:/var/lib/tomcat9/webapps/prodapp.war'
+    }
+}
