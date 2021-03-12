@@ -1,0 +1,23 @@
+node('master') {
+    stage('CDown'){
+        git 'https://github.com/venkat18396/sample9.git'
+    }
+    stage('CBuild'){
+        sh 'mvn package'
+    }
+    stage('CDeploytoQA'){
+    //using Deploy to Container plugin
+        deploy adapters: [tomcat9(credentialsId: '64f94ecb-9670-4356-8148-48c1c3d78f83', path: '', url: 'http://172.31.16.216:8080')], contextPath: 'qatest', war: '**/*.war'
+    }
+}
+ node('slave') {
+    stage('CTest'){
+        git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+        sh 'java -jar /home/ubuntu/workspace/workspace/Scripted_PL/testing.jar'
+    }
+    stage('CDelivery'){
+        //establishing ssh conn btn Master and prod to deploy directly using scp
+        sh 'scp jenkins@54.164.121.43:/var/lib/jenkins/workspace/Scripted_PL/webapp/target/webapp.war ubuntu@174.129.98.177:/var/lib/tomcat9/webapps/prodapp.war'
+    }
+}
+
