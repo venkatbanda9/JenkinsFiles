@@ -17,7 +17,7 @@ node('master') {
     }
     stage('CDelivery'){
         //establishing ssh conn btn Master and prod to deploy directly using scp
-        sh 'scp jenkins@<Master_IP>3:/var/lib/jenkins/workspace/Scripted_PL/webapp/target/webapp.war ubuntu@<Prod_IP>:/var/lib/tomcat9/webapps/prodapp.war'
+        sh 'scp jenkins@<Master_IP>:/var/lib/jenkins/workspace/Scripted_PL/webapp/target/webapp.war ubuntu@<Prod_IP>:/var/lib/tomcat9/webapps/prodapp.war'
     }
 }
 
